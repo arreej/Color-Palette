@@ -1,0 +1,217 @@
+<div class="palette-generator">
+  <!-- Header -->
+  <header class="header">
+    <div class="container flex-between">
+      <div class="logo">
+        <h1>🎨 Color Palette Generator</h1>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="container">
+      <!-- Upload Section -->
+      <section class="upload-section">
+        <div
+          class="upload-area"
+          [class.drag-over]="dragOver"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)"
+        >
+          <div class="upload-content">
+            <div class="upload-icon">📸</div>
+            <h2>Upload an Image</h2>
+            <p>Drag and drop your image here or click to select</p>
+            <button class="btn btn-primary mt-3" (click)="triggerFileInput()">
+              Choose Image
+            </button>
+            <input
+              #fileInput
+              type="file"
+              accept="image/*"
+              (change)="onFileSelected($event)"
+              style="display: none"
+            />
+          </div>
+        </div>
+
+        <!-- Error Message -->
+        <div *ngIf="error" class="error-message">
+          <span>⚠️ {{ error }}</span>
+        </div>
+
+        <!-- Loading State -->
+        <div *ngIf="loading" class="loading-state">
+          <div class="spinner"></div>
+          <p>Extracting colors...</p>
+        </div>
+      </section>
+
+      <!-- Results Section -->
+      <ng-container *ngIf="colors.length > 0">
+        <!-- Control Panel -->
+        <section class="control-panel">
+          <div class="control-group">
+            <label for="colorCount">Number of Colors:</label>
+            <input
+              id="colorCount"
+              type="range"
+              min="3"
+              max="10"
+              [(ngModel)]="colorCount"
+              (change)="updateColorCount()"
+            />
+            <span class="color-count-value">{{ colorCount }}</span>
+          </div>
+          <button class="btn btn-secondary" (click)="clear()">Clear & Start Over</button>
+        </section>
+
+        <!-- Image Preview -->
+        <section class="image-preview" *ngIf="uploadedImage">
+          <h3>Source Image</h3>
+          <img [src]="uploadedImage" alt="Uploaded image" />
+        </section>
+
+        <!-- Dominant Color -->
+        <section class="dominant-color" *ngIf="dominantColor">
+          <h3>Dominant Color</h3>
+          <div class="dominant-swatch" [style.background-color]="dominantColor.hex">
+            <div class="color-details">
+              <span class="hex" [style.color]="getTextColor(dominantColor)">{{
+                dominantColor.hex
+              }}</span>
+              <span class="percentage" [style.color]="getTextColor(dominantColor)"
+                >{{ dominantColor.percentage }}%</span
+              >
+            </div>
+          </div>
+        </section>
+
+        <!-- Color Palette Grid -->
+        <section class="palette-section">
+          <h3>Extracted Color Palette</h3>
+
+          <!-- Palette Cards -->
+          <div class="palette-grid">
+            <div
+              *ngFor="let color of colors; let i = index"
+              class="color-card"
+              [class.selected]="selectedColorIndex === i"
+              (click)="selectedColorIndex = i"
+            >
+              <!-- Color Swatch -->
+              <div
+                class="color-swatch"
+                [style.background-color]="color.hex"
+                [style.color]="getTextColor(color)"
+              >
+                <span class="percentage" *ngIf="color.percentage">{{ color.percentage }}%</span>
+              </div>
+
+              <!-- Color Info -->
+              <div class="color-info">
+                <!-- Hex Code -->
+                <div class="hex-section">
+                  <code class="hex-code">{{ color.hex }}</code>
+                  <button
+                    class="copy-btn"
+                    (click)="copyToClipboard(color.hex); $event.stopPropagation()"
+                    title="Copy to clipboard"
+                  >
+                    📋
+                  </button>
+                </div>
+
+                <!-- RGB -->
+                <div class="color-format">
+                  <span class="label">RGB:</span>
+                  <code>{{ color.rgb.r }}, {{ color.rgb.g }}, {{ color.rgb.b }}</code>
+                </div>
+
+                <!-- HSL -->
+                <div class="color-format">
+                  <span class="label">HSL:</span>
+                  <code>{{ color.hsl.h }}°, {{ color.hsl.s }}%, {{ color.hsl.l }}%</code>
+                </div>
+
+                <!-- Accessibility Score -->
+                <div class="accessibility-score" *ngIf="accessibilityScores[i]">
+                  <span class="label">A11y:</span>
+                  <span
+                    class="badge"
+                    [class.badge-aaa]="accessibilityScores[i].wcag === 'AAA'"
+                    [class.badge-aa]="
+                      accessibilityScores[i].wcag === 'AA' ||
+                      accessibilityScores[i].wcag === 'AA (Large text)'
+                    "
+                    [class.badge-fail]="accessibilityScores[i].wcag === 'Fail'"
+                  >
+                    {{ accessibilityScores[i].wcag }}
+                  </span>
+                  <span class="contrast">{{ accessibilityScores[i].contrast }}:1</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Export Section -->
+        <section class="export-section">
+          <h3>Export Palette</h3>
+          <div class="export-buttons">
+            <button class="btn btn-export" (click)="exportAsJson()" title="Export as JSON">
+              JSON
+            </button>
+            <button class="btn btn-export" (click)="exportAsCss()" title="Export as CSS Variables">
+              CSS
+            </button>
+            <button class="btn btn-export" (click)="exportAsScss()" title="Export as SCSS Variables">
+              SCSS
+            </button>
+            <button
+              class="btn btn-export"
+              (click)="exportAsTailwind()"
+              title="Export as Tailwind Config"
+            >
+              Tailwind
+            </button>
+            <button class="btn btn-export" (click)="exportAsSvg()" title="Export as SVG">
+              SVG
+            </button>
+            <button class="btn btn-export" (click)="exportAsPng()" title="Export as PNG Image">
+              PNG
+            </button>
+            <button class="btn btn-export" (click)="exportAsHtml()" title="Export as HTML">
+              HTML
+            </button>
+            <button class="btn btn-export" (click)="exportAsAse()" title="Export as ASE (Adobe)">
+              ASE
+            </button>
+          </div>
+        </section>
+      </ng-container>
+
+      <!-- Empty State -->
+      <ng-container *ngIf="!colors.length && !loading">
+        <section class="empty-state">
+          <div class="empty-content">
+            <div class="empty-icon">🎨</div>
+            <h2>No Image Uploaded</h2>
+            <p>Upload an image to generate a color palette and see accessibility scores</p>
+          </div>
+        </section>
+      </ng-container>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p class="text-center">
+        Color Palette Generator • Extract cohesive color palettes from images with accessibility
+        analysis
+      </p>
+    </div>
+  </footer>
+</div>
