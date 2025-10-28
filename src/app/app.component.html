@@ -10,9 +10,16 @@
         </div>
       </div>
       <nav class="header-nav">
-        <button class="nav-item active" title="Palette Generator">
-          <span class="icon">🖼️</span>
-          <span class="label">Generator</span>
+        <button
+          class="nav-item theme-toggle"
+          (click)="toggleTheme()"
+          [title]="
+            'Switch to ' +
+            (currentTheme === 'light' ? 'dark' : 'light') +
+            ' mode'
+          "
+        >
+          <span class="icon">{{ currentTheme === "light" ? "🌙" : "☀️" }}</span>
         </button>
       </nav>
     </div>
@@ -74,7 +81,9 @@
             />
             <span class="color-count-value">{{ colorCount }}</span>
           </div>
-          <button class="btn btn-secondary" (click)="clear()">Clear & Start Over</button>
+          <button class="btn btn-secondary" (click)="clear()">
+            Clear & Start Over
+          </button>
         </section>
 
         <!-- Image Preview -->
@@ -86,12 +95,17 @@
         <!-- Dominant Color -->
         <section class="dominant-color" *ngIf="dominantColor">
           <h3>Dominant Color</h3>
-          <div class="dominant-swatch" [style.background-color]="dominantColor.hex">
+          <div
+            class="dominant-swatch"
+            [style.background-color]="dominantColor.hex"
+          >
             <div class="color-details">
               <span class="hex" [style.color]="getTextColor(dominantColor)">{{
                 dominantColor.hex
               }}</span>
-              <span class="percentage" [style.color]="getTextColor(dominantColor)"
+              <span
+                class="percentage"
+                [style.color]="getTextColor(dominantColor)"
                 >{{ dominantColor.percentage }}%</span
               >
             </div>
@@ -116,7 +130,9 @@
                 [style.background-color]="color.hex"
                 [style.color]="getTextColor(color)"
               >
-                <span class="percentage" *ngIf="color.percentage">{{ color.percentage }}%</span>
+                <span class="percentage" *ngIf="color.percentage"
+                  >{{ color.percentage }}%</span
+                >
               </div>
 
               <!-- Color Info -->
@@ -126,7 +142,9 @@
                   <code class="hex-code">{{ color.hex }}</code>
                   <button
                     class="copy-btn"
-                    (click)="copyToClipboard(color.hex); $event.stopPropagation()"
+                    (click)="
+                      copyToClipboard(color.hex); $event.stopPropagation()
+                    "
                     title="Copy to clipboard"
                   >
                     📋
@@ -136,13 +154,19 @@
                 <!-- RGB -->
                 <div class="color-format">
                   <span class="label">RGB:</span>
-                  <code>{{ color.rgb.r }}, {{ color.rgb.g }}, {{ color.rgb.b }}</code>
+                  <code
+                    >{{ color.rgb.r }}, {{ color.rgb.g }},
+                    {{ color.rgb.b }}</code
+                  >
                 </div>
 
                 <!-- HSL -->
                 <div class="color-format">
                   <span class="label">HSL:</span>
-                  <code>{{ color.hsl.h }}°, {{ color.hsl.s }}%, {{ color.hsl.l }}%</code>
+                  <code
+                    >{{ color.hsl.h }}°, {{ color.hsl.s }}%,
+                    {{ color.hsl.l }}%</code
+                  >
                 </div>
 
                 <!-- Accessibility Score -->
@@ -159,7 +183,9 @@
                   >
                     {{ accessibilityScores[i].wcag }}
                   </span>
-                  <span class="contrast">{{ accessibilityScores[i].contrast }}:1</span>
+                  <span class="contrast"
+                    >{{ accessibilityScores[i].contrast }}:1</span
+                  >
                 </div>
               </div>
             </div>
@@ -170,13 +196,25 @@
         <section class="export-section">
           <h3>Export Palette</h3>
           <div class="export-buttons">
-            <button class="btn btn-export" (click)="exportAsJson()" title="Export as JSON">
+            <button
+              class="btn btn-export"
+              (click)="exportAsJson()"
+              title="Export as JSON"
+            >
               JSON
             </button>
-            <button class="btn btn-export" (click)="exportAsCss()" title="Export as CSS Variables">
+            <button
+              class="btn btn-export"
+              (click)="exportAsCss()"
+              title="Export as CSS Variables"
+            >
               CSS
             </button>
-            <button class="btn btn-export" (click)="exportAsScss()" title="Export as SCSS Variables">
+            <button
+              class="btn btn-export"
+              (click)="exportAsScss()"
+              title="Export as SCSS Variables"
+            >
               SCSS
             </button>
             <button
@@ -186,16 +224,32 @@
             >
               Tailwind
             </button>
-            <button class="btn btn-export" (click)="exportAsSvg()" title="Export as SVG">
+            <button
+              class="btn btn-export"
+              (click)="exportAsSvg()"
+              title="Export as SVG"
+            >
               SVG
             </button>
-            <button class="btn btn-export" (click)="exportAsPng()" title="Export as PNG Image">
+            <button
+              class="btn btn-export"
+              (click)="exportAsPng()"
+              title="Export as PNG Image"
+            >
               PNG
             </button>
-            <button class="btn btn-export" (click)="exportAsHtml()" title="Export as HTML">
+            <button
+              class="btn btn-export"
+              (click)="exportAsHtml()"
+              title="Export as HTML"
+            >
               HTML
             </button>
-            <button class="btn btn-export" (click)="exportAsAse()" title="Export as ASE (Adobe)">
+            <button
+              class="btn btn-export"
+              (click)="exportAsAse()"
+              title="Export as ASE (Adobe)"
+            >
               ASE
             </button>
           </div>
@@ -208,7 +262,10 @@
           <div class="empty-content">
             <div class="empty-icon">🎨</div>
             <h2>No Image Uploaded</h2>
-            <p>Upload an image to generate a color palette and see accessibility scores</p>
+            <p>
+              Upload an image to generate a color palette and see accessibility
+              scores
+            </p>
           </div>
         </section>
       </ng-container>
@@ -219,8 +276,8 @@
   <footer class="footer">
     <div class="container">
       <p class="text-center">
-        Color Palette Generator • Extract cohesive color palettes from images with accessibility
-        analysis
+        Color Palette Generator • Extract cohesive color palettes from images
+        with accessibility analysis
       </p>
     </div>
   </footer>
