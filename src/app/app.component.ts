@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ColorExtractionService, Color, PaletteResult } from './services/color-extraction.service';
 import { AccessibilityService, AccessibilityScore } from './services/accessibility.service';
 import { PaletteExportService } from './services/palette-export.service';
+import { ThemeService, Theme } from './services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -25,12 +26,20 @@ export class AppComponent {
   accessibilityScores: AccessibilityScore[] = [];
   selectedColorIndex: number | null = null;
   dragOver = false;
+  showColorPicker = false;
+  currentTheme: Theme = 'light';
 
   constructor(
     private colorExtraction: ColorExtractionService,
     private accessibility: AccessibilityService,
-    private exportService: PaletteExportService
-  ) {}
+    private exportService: PaletteExportService,
+    private themeService: ThemeService
+  ) {
+    this.currentTheme = this.themeService.getCurrentTheme();
+    this.themeService.theme$.subscribe((theme) => {
+      this.currentTheme = theme;
+    });
+  }
 
   /**
    * Handle file selection
@@ -179,5 +188,19 @@ export class AppComponent {
     this.accessibilityScores = [];
     this.selectedColorIndex = null;
     this.fileInput.nativeElement.value = '';
+  }
+
+  /**
+   * Toggle theme between light and dark
+   */
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+  }
+
+  /**
+   * Toggle color picker visibility
+   */
+  toggleColorPicker(): void {
+    this.showColorPicker = !this.showColorPicker;
   }
 }
