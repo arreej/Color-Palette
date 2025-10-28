@@ -273,7 +273,7 @@
 
     label {
       font-weight: 600;
-      color: var(--text-primary);
+      color: black;
       white-space: nowrap;
     }
 
@@ -469,13 +469,13 @@
 
       .label {
         font-weight: 600;
-        color: var(--text-secondary);
+        color: black;
         white-space: nowrap;
       }
 
       code {
         font-family: 'Courier New', monospace;
-        color: var(--text-primary);
+        color: black;
         word-break: break-all;
         font-size: 0.85rem;
       }
@@ -492,7 +492,7 @@
 
       .label {
         font-weight: 600;
-        color: var(--text-secondary);
+        color: black;
       }
 
       .badge {
@@ -519,7 +519,7 @@
       }
 
       .contrast {
-        color: var(--text-secondary);
+        color: black;
         font-weight: 600;
         margin-left: auto;
       }
